@@ -1,5 +1,3 @@
-# AIzaSyC3SNKL-OvOg4Fcj-0UigHmLjh4hXh7PVo
-
 import streamlit as st
 import google.generativeai as genai
 import json
