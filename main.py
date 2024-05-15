@@ -10,7 +10,7 @@ os.environ["HTTP_PROXYS"] = "http://127.0.0.1:10809"
 st.session_state.setdefault('api_key', None)
 st.title("💬 Cyber Hammer")
 st.caption("🚀 A powerful Chatbot powered by Zehao Qian")
-st.write("Test API: AIzaSyC3SNKL-OvOg4Fcj-0UigHmLjh4hXh7PVo")
+st.write("Test API:")
 
 
 # Configure API key
