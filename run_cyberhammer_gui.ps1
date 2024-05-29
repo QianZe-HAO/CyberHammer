@@ -1,6 +1,7 @@
 # Check if conda is installed
 if (-not (Get-Command conda -ErrorAction SilentlyContinue)) {
     Write-Error "Conda is not installed. Please install Conda first."
+    Start-Process "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"
     exit 1
 }
 
@@ -25,4 +26,5 @@ else {
 }
 
 # run streamlit application
+cd .\web_gui
 streamlit run main.py
