@@ -1,0 +1,1 @@
+powershell -File ".\CyberHammer.ps1"
