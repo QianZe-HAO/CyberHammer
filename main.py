@@ -1,6 +1,7 @@
 import sys
 import subprocess
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
+from PySide6.QtGui import QIcon
 
 
 class App(QWidget):
@@ -10,7 +11,8 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Cyber Hammer')
-
+        # set icon
+        self.setWindowIcon(QIcon('./icon/cyberhammer.webp'))
         # set window size
         self.setFixedSize(400, 300)
 
