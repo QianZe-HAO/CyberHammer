@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+
+  openie:
+    container_name: CyberHammer
+    build: .
+    ports:
+      - "8501:8501"
+    restart: always
