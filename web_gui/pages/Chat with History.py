@@ -1,16 +1,11 @@
-from langchain.memory import ChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 import streamlit as st
-import os
+import config.proxy as proxy
+import LLM.chat_with_history as chat_with_history
+
 
 # using v2rayn
-os.environ["HTTP_PROXY"] = "http://127.0.0.1:10809"
-os.environ["HTTP_PROXYS"] = "http://127.0.0.1:10809"
+proxy.set_proxy()
 
-# model = "gemini-1.5-flash"
 
 st.session_state.setdefault('api_key', None)
 st.title("💬 Cyber Hammer")
@@ -36,33 +31,17 @@ else:
     # Store the API key in session state
     st.session_state.api_key = api_key
 
-# system_message = st.sidebar.text_input("Input System Message:", "You are a helpful assistant. Answer all questions to the best of your ability. Answer me in Chinese.")
 
 system_message = st.sidebar.text_area(
     "System Message", value="You are a helpful assistant. Answer all questions to the best of your ability.")
 
-
-chat = ChatGoogleGenerativeAI(model=model, google_api_key=api_key)
-
-prompt = ChatPromptTemplate.from_messages(
-    [
-        SystemMessage(system_message),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-chain = prompt | chat
-
-if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = ChatMessageHistory()
-
-chain_with_message_history = RunnableWithMessageHistory(
-    chain,
-    lambda session_id: st.session_state["chat_history"],
-    input_messages_key="input",
-    history_messages_key="chat_history",
-)
+# ----------------------------------------------------------------
+# Create a chain with message history
+chain_with_message_history = chat_with_history.lang_history(
+    model,
+    api_key,
+    system_message)
+# ----------------------------------------------------------------
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
