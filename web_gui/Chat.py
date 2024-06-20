@@ -2,9 +2,11 @@ import streamlit as st
 import google.generativeai as genai
 import json
 import os
+import config.proxy as proxy
 
-os.environ["HTTP_PROXY"] = "http://127.0.0.1:10809"
-os.environ["HTTP_PROXYS"] = "http://127.0.0.1:10809"
+
+# using v2rayn
+proxy.set_proxy()
 
 
 st.session_state.setdefault('api_key', None)
