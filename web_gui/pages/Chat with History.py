@@ -19,7 +19,7 @@ model = st.sidebar.radio("Select LLM Model", [
 api_key = st.sidebar.text_input(
     "Gemini API Key:", value=st.session_state.api_key)
 st.sidebar.markdown(
-    "[Get an Gemini API key](https://platform.openai.com/account/api-keys)")
+    "[Get an Gemini API key](https://aistudio.google.com/)")
 st.sidebar.markdown(
     "[View Source Code](https://github.com/QianZe-HAO/CyberHammer)")
 
