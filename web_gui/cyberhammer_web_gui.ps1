@@ -3,4 +3,4 @@ $envName = "agent"
 conda activate $envName
 # run streamlit application
 cd .\web_gui
-streamlit run Chat.py
+streamlit run 01_Super_Chat.py
