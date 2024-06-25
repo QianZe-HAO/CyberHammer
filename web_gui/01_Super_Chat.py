@@ -150,15 +150,6 @@ if prompt := st.chat_input(placeholder="Enter your Query:"):
                                  google_api_key=gemini_api_key)
 
     tools = tools
-    # chat_agent = ConversationalChatAgent.from_llm_and_tools(
-    #     llm=llm, tools=tools)
-    # executor = AgentExecutor.from_agent_and_tools(
-    #     agent=chat_agent,
-    #     tools=tools,
-    #     memory=memory,
-    #     return_intermediate_steps=True,
-    #     handle_parsing_errors=True,
-    # )
 
     llm_chain = LLMChain(llm=llm, prompt=llm_prompt)
     agent = StructuredChatAgent(llm_chain=llm_chain, verbose=True, tools=tools)
