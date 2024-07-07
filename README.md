@@ -8,5 +8,3 @@ A brave try for Channeling AI
 .\run_cyberhammer_gui.ps1
 # or double click the "cyberhammer_gui.cmd" file
 ```
-
-
