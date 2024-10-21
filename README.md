@@ -1,6 +1,5 @@
 # CyberHammer
-A brave try for Channeling AI
-
+A brave try for Channeling AI. Pure AI chain. 
 ## Create the conda environment and Run CyberHammer
 
 ```shell
