@@ -5,5 +5,6 @@ A brave try for Channeling AI. Pure AI chain.
 ```shell
 # only for windows
 .\run_cyberhammer_gui.ps1
+
 # or double click the "cyberhammer_gui.cmd" file
 ```
