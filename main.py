@@ -1,78 +1,139 @@
-from langchain_ollama import ChatOllama
-from typing import Annotated
-from typing_extensions import TypedDict
-from langgraph.graph import StateGraph, START
-from langgraph.graph.message import add_messages
-from langchain_community.tools import DuckDuckGoSearchResults
-from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import MemorySaver
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage
-
+import os
 import uuid
-# -----------------------------------------------
-# create session id
-thread_id = str(uuid.uuid4())
-# -----------------------------------------------
-# Define the state of the system
-# This is the state that will be passed between the nodes of the graph
+from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
-    res: str
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import BaseMessage, HumanMessage
+
+# from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.postgres import PostgresSaver
+from psycopg import Connection
+from langchain_core.runnables import RunnableConfig
+from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+
+from rich.console import Console
+
+from tools import __all__ as tool_lists
+from utils import print_message
 
 
-graph_builder = StateGraph(State)
+# Load environment variables
+load_dotenv()
 
-# -----------------------------------------------
-llm = ChatOllama(model="qwen2.5:3b")
-search_engine = DuckDuckGoSearchResults()
-llm_with_tools = llm.bind_tools([search_engine])
+# -----------------------------------------------------
+# Individually read and validate PostgreSQL database configuration with explicit naming
+POSTGRESQL_DB_USER = os.getenv("POSTGRESQL_DB_USER")
+POSTGRESQL_DB_PASSWORD = os.getenv("POSTGRESQL_DB_PASSWORD")
+POSTGRESQL_DB_HOST = os.getenv("POSTGRESQL_DB_HOST")
+POSTGRESQL_DB_PORT = os.getenv("POSTGRESQL_DB_PORT", 5432)
+POSTGRESQL_DB_NAME = os.getenv("POSTGRESQL_DB_NAME")
 
-tool_node = ToolNode(tools=[search_engine])
-
-prompt_template = ChatPromptTemplate.from_messages(
+# Validate that all required environment variables are present
+if not all(
     [
-        (
-            "system",
-            "你是Cyber Researcher，你可以是一个AI机器人，可以联网搜索回答问题。用中文回答所有的问题。",
-        ),
-        MessagesPlaceholder(variable_name="messages"),
-    ])
-
-
-def researcher_bot(state: State):
-    prompt = prompt_template.invoke(state)
-    response = llm_with_tools.invoke(prompt)
-    return {"messages": response}
-
-
-graph_builder.add_node("Researcher", researcher_bot)
-graph_builder.add_node("tools", tool_node)
-graph_builder.add_conditional_edges(
-    "Researcher",
-    tools_condition,
-)
-# Any time a tool is called, we return to the researcher_bot to decide the next step
-graph_builder.add_edge("tools", "Researcher")
-graph_builder.add_edge(
-    START,
-    "Researcher",
-)
-memory = MemorySaver()
-graph = graph_builder.compile(checkpointer=memory)
-
-# -----------------------------------------------
-
-
-def get_chatbot_response(query: str, thread_id: str):
-    res = graph.invoke(
-        {"messages": [HumanMessage(query)]},
-        {"configurable": {"thread_id": thread_id}},
+        POSTGRESQL_DB_USER,
+        POSTGRESQL_DB_PASSWORD,
+        POSTGRESQL_DB_HOST,
+        POSTGRESQL_DB_PORT,
+        POSTGRESQL_DB_NAME,
+    ]
+):
+    raise EnvironmentError(
+        "Missing one or more required environment variables for PostgreSQL: "
+        "DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME"
     )
-    return res
 
 
-res = get_chatbot_response("我想知道关于中国今天的新闻，请帮我搜索一下", thread_id)
-print(res)
+# URL-encode the password to handle special characters
+pg_password_encoded = quote_plus(POSTGRESQL_DB_PASSWORD)
+
+# Construct the PostgreSQL database URL
+POSTGRESQL_DATABASE_URL = f"postgresql://{POSTGRESQL_DB_USER}:{pg_password_encoded}@{POSTGRESQL_DB_HOST}:{POSTGRESQL_DB_PORT}/{POSTGRESQL_DB_NAME}"
+
+# -----------------------------------------------------
+# Define model configuration from environment
+MAIN_LLM_BASE_URL = os.getenv("MAIN_LLM_BASE_URL")
+MAIN_LLM_API_KEY = os.getenv("MAIN_LLM_API_KEY")
+MAIN_LLM_MODEL_NAME = os.getenv("MAIN_LLM_MODEL_NAME")
+
+
+# Check if all required environment variables exist
+if not all([MAIN_LLM_BASE_URL, MAIN_LLM_API_KEY, MAIN_LLM_MODEL_NAME]):
+    raise EnvironmentError(
+        "Missing one or more required environment variables: MAIN_LLM_BASE_URL, MAIN_LLM_API_KEY, MAIN_LLM_MODEL_NAME"
+    )
+
+# Initialize the ChatOpenAI model
+model = ChatOpenAI(
+    base_url=MAIN_LLM_BASE_URL,
+    api_key=MAIN_LLM_API_KEY,
+    model=MAIN_LLM_MODEL_NAME,
+)
+
+
+system_prompt = """
+You are a meticulous research analyst. When given a topxic:
+1. Break down the query into key components and identify what needs clarification.
+2. Use the internet_search tool with precise, well-constructed queries to gather accurate, up-to-date information.
+3. Cross-check facts across multiple sources when possible.
+4. Synthesize findings into a clear, well-structured report with sections: Overview, Key Features, Use Cases, and Recent Developments.
+5. Cite key insights and avoid speculation. If information is unclear, note that as a limitation.
+Always aim for depth, accuracy, and readability.
+"""
+
+# checkpointer = InMemorySaver()
+# checkpointer = PostgresSaver(conn=POSTGRESQL_DATABASE_URL)
+
+checkpointer = PostgresSaver(
+    conn=Connection.connect(
+        conninfo=POSTGRESQL_DATABASE_URL,
+        autocommit=True,
+    )
+)
+checkpointer.setup()
+
+agent = create_deep_agent(
+    model=model,
+    tools=tool_lists,
+    system_prompt=system_prompt,
+    checkpointer=checkpointer,
+    backend=FilesystemBackend(root_dir="./sandbox", virtual_mode=True),
+)
+
+
+console = Console()
+
+
+config: RunnableConfig = {"configurable": {"thread_id": uuid.uuid4()}}
+
+# Track the number of messages already printed
+printed_messages = 0
+
+while True:
+    try:
+        # get user input and exit if needed
+        user_input = console.input("You: ")
+        if user_input.lower() in ["quit", "exit", "bye"]:
+            console.print("Goodbye!", style="bold yellow")
+            break
+
+        for step in agent.stream(
+            {"messages": [HumanMessage(content=user_input)]},
+            config=config,
+            stream_mode="values",
+        ):
+
+            messages = step["messages"]
+
+            for msg in messages[printed_messages:]:
+                msg: BaseMessage
+                print_message(console=console, msg=msg)
+
+            printed_messages = len(messages)
+
+    except KeyboardInterrupt:
+        console.print("Goodbye!", style="bold blue")
+        break
