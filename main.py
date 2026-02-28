@@ -1,15 +1,10 @@
 import os
 import uuid
 from dotenv import load_dotenv
-from urllib.parse import quote_plus
 
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage
-
-# from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.checkpoint.postgres import PostgresSaver
-from psycopg import Connection
 from langchain_core.runnables import RunnableConfig
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend
@@ -19,39 +14,14 @@ from rich.console import Console
 from tools import __all__ as tool_lists
 from utils import print_message
 
+from checkpointers import get_checkpointer
 
 # Load environment variables
 load_dotenv()
 
 # -----------------------------------------------------
-# Individually read and validate PostgreSQL database configuration with explicit naming
-POSTGRESQL_DB_USER = os.getenv("POSTGRESQL_DB_USER")
-POSTGRESQL_DB_PASSWORD = os.getenv("POSTGRESQL_DB_PASSWORD")
-POSTGRESQL_DB_HOST = os.getenv("POSTGRESQL_DB_HOST")
-POSTGRESQL_DB_PORT = os.getenv("POSTGRESQL_DB_PORT", 5432)
-POSTGRESQL_DB_NAME = os.getenv("POSTGRESQL_DB_NAME")
-
-# Validate that all required environment variables are present
-if not all(
-    [
-        POSTGRESQL_DB_USER,
-        POSTGRESQL_DB_PASSWORD,
-        POSTGRESQL_DB_HOST,
-        POSTGRESQL_DB_PORT,
-        POSTGRESQL_DB_NAME,
-    ]
-):
-    raise EnvironmentError(
-        "Missing one or more required environment variables for PostgreSQL: "
-        "DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME"
-    )
-
-
-# URL-encode the password to handle special characters
-pg_password_encoded = quote_plus(POSTGRESQL_DB_PASSWORD)
-
-# Construct the PostgreSQL database URL
-POSTGRESQL_DATABASE_URL = f"postgresql://{POSTGRESQL_DB_USER}:{pg_password_encoded}@{POSTGRESQL_DB_HOST}:{POSTGRESQL_DB_PORT}/{POSTGRESQL_DB_NAME}"
+USE_POSTGRES = os.getenv("USE_POSTGRES", "true").lower() == "true"
+checkpointer = get_checkpointer(use_postgres=USE_POSTGRES)
 
 # -----------------------------------------------------
 # Define model configuration from environment
@@ -84,16 +54,6 @@ You are a meticulous research analyst. When given a topxic:
 Always aim for depth, accuracy, and readability.
 """
 
-# checkpointer = InMemorySaver()
-# checkpointer = PostgresSaver(conn=POSTGRESQL_DATABASE_URL)
-
-checkpointer = PostgresSaver(
-    conn=Connection.connect(
-        conninfo=POSTGRESQL_DATABASE_URL,
-        autocommit=True,
-    )
-)
-checkpointer.setup()
 
 agent = create_deep_agent(
     model=model,
