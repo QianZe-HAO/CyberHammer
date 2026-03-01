@@ -21,7 +21,6 @@ from deepagents.backends import FilesystemBackend
 from tools import __all__ as tool_lists
 from checkpointers import get_checkpointer
 from rich.console import Console
-from md2tgmd import escape
 
 
 load_dotenv()
@@ -128,7 +127,7 @@ async def agent_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
             last_response: BaseMessage = ai_messages[-1]
             content = last_response.content
             try:
-                await thinking_msg.edit_text(escape(content), parse_mode="MarkdownV2")
+                await thinking_msg.edit_text(content, parse_mode="MarkdownV2")
                 print(f"Successfully sent AI response (MarkdownV2) to user {user_id}")
             except Exception as e:
                 print(

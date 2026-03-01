@@ -1,0 +1,9 @@
+FROM ghcr.io/astral-sh/uv:python3.12-trixie
+WORKDIR /app
+COPY . .
+# Install dependencies
+RUN uv sync
+# Allow Python Buffering to be disabled to see logs in real time
+ENV PYTHONUNBUFFERED=1
+# Run the application
+CMD ["uv", "run", "main.telegram.py"]
