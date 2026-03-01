@@ -1,6 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.12.12"
+requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.14'",
     "python_full_version < '3.14'",
@@ -509,7 +509,6 @@ dependencies = [
     { name = "dotenv" },
     { name = "langchain-openai" },
     { name = "langgraph-checkpoint-postgres" },
-    { name = "md2tgmd" },
     { name = "psycopg", extra = ["binary"] },
     { name = "python-telegram-bot", extra = ["socks"] },
     { name = "rich" },
@@ -531,7 +530,6 @@ requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "langchain-openai", specifier = ">=1.1.10" },
     { name = "langgraph-checkpoint-postgres", specifier = ">=3.0.4" },
-    { name = "md2tgmd", specifier = ">=0.3.10" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.3" },
     { name = "python-telegram-bot", extras = ["socks"], specifier = ">=22.6" },
     { name = "rich", specifier = ">=14.3.3" },
@@ -1646,15 +1644,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c7/74/97e72a36efd4ae2bccb3463284300f8953f199b5ffbc04cbbb0ec78f74b1/matplotlib_inline-0.2.1.tar.gz", hash = "sha256:e1ee949c340d771fc39e241ea75683deb94762c8fa5f2927ec57c83c4dffa9fe", size = 8110, upload-time = "2025-10-23T09:00:22.126Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/af/33/ee4519fa02ed11a94aef9559552f3b17bb863f2ecfe1a35dc7f548cde231/matplotlib_inline-0.2.1-py3-none-any.whl", hash = "sha256:d56ce5156ba6085e00a9d54fead6ed29a9c47e215cd1bba2e976ef39f5710a76", size = 9516, upload-time = "2025-10-23T09:00:20.675Z" },
-]
-
-[[package]]
-name = "md2tgmd"
-version = "0.3.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/bf/e7/f43e7f79c72d12fd8f038c6523e9b17d98b619d09806376e04e6b0787ad1/md2tgmd-0.3.10.tar.gz", hash = "sha256:613fef6da1c00101ea94d3b8658974f7f21ae8cb84d9ab16814fdd9daa5026f3", size = 28827, upload-time = "2025-03-26T01:45:58.279Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/ea/2afb0a931873469fc9f81a218153b12678cd100ac42107e30fe178fd6aa9/md2tgmd-0.3.10-py3-none-any.whl", hash = "sha256:bc3d43831a0b1d1db6c03ce66dfc37878b5b76322f39d5c0caea4e7e7c3c6192", size = 28217, upload-time = "2025-03-26T01:45:57.121Z" },
 ]
 
 [[package]]

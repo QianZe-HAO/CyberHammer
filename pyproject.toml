@@ -3,13 +3,12 @@ name = "cyberhammer"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12.12"
+requires-python = ">=3.12"
 dependencies = [
     "deepagents>=0.4.3",
     "dotenv>=0.9.9",
     "langchain-openai>=1.1.10",
     "langgraph-checkpoint-postgres>=3.0.4",
-    "md2tgmd>=0.3.10",
     "psycopg[binary]>=3.3.3",
     "python-telegram-bot[socks]>=22.6",
     "rich>=14.3.3",
