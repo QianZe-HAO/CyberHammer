@@ -5,5 +5,10 @@ COPY . .
 RUN uv sync
 # Allow Python Buffering to be disabled to see logs in real time
 ENV PYTHONUNBUFFERED=1
+
+RUN uv run playwright install-deps
+RUN uv run playwright install chromium
+RUN mkdir -p /app/sandbox
+
 # Run the application
 CMD ["uv", "run", "main.telegram.py"]
