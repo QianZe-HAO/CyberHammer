@@ -12,13 +12,12 @@ from .date_time import (
     convert_timestamp_to_datetime,
 )
 from .web_search import internet_search
+from .web_crawler import crawl_url
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 USE_CRAWL4AI = os.getenv("USE_CRAWL4AI", "False").lower() == "true"
-
-from .web_search import crawl_url
 
 
 __all__ = [
