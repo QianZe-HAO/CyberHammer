@@ -12,7 +12,7 @@ from telegram.ext import (
     filters,
 )
 from dotenv import load_dotenv
-
+from md2tgmd import escape
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
@@ -125,7 +125,7 @@ async def agent_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ai_messages = [m for m in res["messages"] if m.type == "ai"]
         if ai_messages:
             last_response: BaseMessage = ai_messages[-1]
-            content = last_response.content
+            content = escape(last_response.content)
             try:
                 await thinking_msg.edit_text(content, parse_mode="MarkdownV2")
                 print(f"Successfully sent AI response (MarkdownV2) to user {user_id}")
