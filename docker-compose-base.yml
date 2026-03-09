@@ -1,0 +1,44 @@
+name: cyber-hammer-stack
+
+services:
+  cyber-hammer-postgres:
+    image: postgres:18.3-alpine3.23
+    container_name: cyber-hammer-postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRESQL_DB_NAME}
+      POSTGRES_USER: ${POSTGRESQL_DB_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_DB_PASSWORD}
+    ports:
+      - "${POSTGRESQL_DB_PORT}:5432"
+    volumes:
+      - cyber_hammer_postgres_data:/var/lib/postgresql
+    networks:
+      - cyber-hammer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  searxng:
+    image: searxng/searxng:2026.3.6-0716de6bc
+    container_name: searxng
+    ports:
+      - "${SEARXNG_PORT}:8080"
+    volumes:
+      - ./config/:/etc/searxng/
+      - ./data/:/var/cache/searxng/
+    restart: unless-stopped
+    networks:
+      - cyber-hammer-network
+
+volumes:
+  cyber_hammer_postgres_data:
+
+networks:
+  cyber-hammer-network:
+    driver: bridge
+    name: cyber-hammer-network
