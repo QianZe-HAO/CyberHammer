@@ -13,14 +13,15 @@ from telegram.ext import (
 )
 from dotenv import load_dotenv
 from md2tgmd import escape
-from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
-from deepagents import create_deep_agent
-from deepagents.backends import FilesystemBackend
-from tools import __all__ as tool_lists
-from checkpointers import get_checkpointer
 from rich.console import Console
+from agent import agent
+
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 load_dotenv()
@@ -28,49 +29,6 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_PROXY_URL = os.getenv("TELEGRAM_PROXY_URL", None)
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# -----------------------------------------------------
-USE_POSTGRES = os.getenv("USE_POSTGRES", "true").lower() == "true"
-checkpointer = get_checkpointer(use_postgres=USE_POSTGRES)
-
-# -----------------------------------------------------
-# Define model configuration from environment
-MAIN_LLM_BASE_URL = os.getenv("MAIN_LLM_BASE_URL")
-MAIN_LLM_API_KEY = os.getenv("MAIN_LLM_API_KEY")
-MAIN_LLM_MODEL_NAME = os.getenv("MAIN_LLM_MODEL_NAME")
-
-if not all([MAIN_LLM_BASE_URL, MAIN_LLM_API_KEY, MAIN_LLM_MODEL_NAME]):
-    raise EnvironmentError(
-        "Missing one or more required environment variables: MAIN_LLM_BASE_URL, MAIN_LLM_API_KEY, MAIN_LLM_MODEL_NAME"
-    )
-
-# Initialize the model and agent
-model = ChatOpenAI(
-    base_url=MAIN_LLM_BASE_URL,
-    api_key=MAIN_LLM_API_KEY,
-    model=MAIN_LLM_MODEL_NAME,
-)
-
-system_prompt = """
-You are a meticulous research analyst. When given a topic:
-1. Break down the query into key components and identify what needs clarification.
-2. Use the internet_search tool with precise, well-constructed queries to gather accurate, up-to-date information.
-3. Cross-check facts across multiple sources when possible.
-4. Synthesize findings into a clear, well-structured report with sections: Overview, Key Features, Use Cases, and Recent Developments.
-5. Cite key insights and avoid speculation. If information is unclear, note that as a limitation.
-Always aim for depth, accuracy, and readability.
-"""
-
-agent = create_deep_agent(
-    model=model,
-    tools=tool_lists,
-    system_prompt=system_prompt,
-    checkpointer=checkpointer,
-    backend=FilesystemBackend(root_dir="./sandbox", virtual_mode=True),
-)
 
 console = Console()  # For internal logging; output will go to Telegram
 
@@ -128,7 +86,8 @@ async def agent_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
             content = escape(last_response.content)
             try:
                 await thinking_msg.edit_text(content, parse_mode="MarkdownV2")
-                print(f"Successfully sent AI response (MarkdownV2) to user {user_id}")
+                print(
+                    f"Successfully sent AI response (MarkdownV2) to user {user_id}")
             except Exception as e:
                 print(
                     f"Markdown parsing failed for user {user_id}, falling back to plain text: {e}"
@@ -171,7 +130,8 @@ async def main():
 
     # Error handler
     application.add_error_handler(
-        lambda update, ctx: logger.error(f"Update {update} caused error: {ctx.error}")
+        lambda update, ctx: logger.error(
+            f"Update {update} caused error: {ctx.error}")
     )
 
     logger.info("Starting Telegram bot with DeepAgent...")
