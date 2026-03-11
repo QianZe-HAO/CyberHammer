@@ -1,0 +1,20 @@
+FROM ghcr.io/astral-sh/uv:python3.12-trixie
+WORKDIR /app
+COPY . .
+
+# Allow Python Buffering to be disabled to see logs in real time
+ENV PYTHONUNBUFFERED=1
+
+# Install dependencies
+RUN uv sync --extra ui
+
+# Install crawl4ai dependencies
+RUN uv run crawl4ai-setup
+
+RUN mkdir -p /app/sandbox
+
+# Run the application on port 8501
+EXPOSE 8501
+
+# Run the application
+CMD ["uv", "run", "streamlit", "run", "endpoint-ui.py"]

@@ -1,0 +1,43 @@
+[server]
+# Run Streamlit in headless mode - don't automatically open a browser window
+# Useful for remote servers or when running in containers
+# Default: false on most systems, true on Linux without DISPLAY
+headless = true
+
+# The port number on which the Streamlit server will listen for connections
+# Default: 8501
+port = 8501
+
+[logger]
+# Set the logging level for Streamlit's internal logger
+# Options: "error", "warning", "info", "debug"
+# "info" level includes informational messages about app execution
+# Default: "info"
+level = "info"
+
+# Custom format for log messages using Python's logging module format strings
+# %(asctime)s - timestamp when the log was created
+# %(message)s - the actual log message
+# Default: "%(asctime)s %(message)s"
+messageFormat = "%(asctime)s %(message)s"
+
+[runner]
+# Disable Streamlit's "magic" feature that automatically writes variables
+# and expressions to the app when they appear on a line by themselves
+# When false, you must explicitly use st.write() or similar functions
+# Default: true
+magicEnabled = false
+
+# Disable fast script reruns - wait for script execution to reach a yield point
+# before processing rerun requests from user interactions
+# When false, makes app less responsive but avoids potential race conditions
+# Default: true
+fastReruns = false
+
+
+[client]
+# Set the toolbar mode to minimal, showing only options set externally
+# or through st.set_page_config()
+# "minimal" hides developer options and shows only essential controls
+# Default: "auto"
+toolbarMode = "minimal"
