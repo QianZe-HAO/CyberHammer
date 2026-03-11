@@ -1,14 +1,17 @@
 FROM ghcr.io/astral-sh/uv:python3.12-trixie
 WORKDIR /app
 COPY . .
-# Install dependencies
-RUN uv sync
+
 # Allow Python Buffering to be disabled to see logs in real time
 ENV PYTHONUNBUFFERED=1
 
-RUN uv run playwright install-deps
-RUN uv run playwright install chromium
+# Install dependencies
+RUN uv sync --extra telegram
+
+# Install crawl4ai dependencies
+RUN uv run crawl4ai-setup
+
 RUN mkdir -p /app/sandbox
 
 # Run the application
-CMD ["uv", "run", "main.telegram.py"]
+CMD ["uv", "run", "endpoint-telegram.py"]
