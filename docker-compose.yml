@@ -7,7 +7,7 @@ services:
   cyber-hammer-telegram:
     build:
       context: .
-      dockerfile: Dockerfile.main.telegram
+      dockerfile: Dockerfile.telegram
     container_name: cyber-hammer-telegram
     restart: always
     env_file:
@@ -15,7 +15,22 @@ services:
     depends_on:
       cyber-hammer-postgres:
         condition: service_healthy
+    volumes:
+      - ./sandbox:/app/sandbox
     networks:
       - cyber-hammer-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+
+  cyber-hammer-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    container_name: cyber-hammer-ui
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./sandbox:/app/sandbox
+    restart: unless-stopped
+    networks:
+      - cyber-hammer-network
