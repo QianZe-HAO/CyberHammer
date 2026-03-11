@@ -10,14 +10,19 @@ dependencies = [
     "langchain-community>=0.4.1",
     "langchain-openai>=1.1.10",
     "langgraph-checkpoint-postgres>=3.0.4",
-    "md2tgmd>=0.3.10",
     "psycopg[binary]>=3.3.3",
     "python-dotenv>=1.2.1",
-    "python-telegram-bot[socks]>=22.6",
-    "requests>=2.32.5",
     "rich>=14.3.3",
     "sqlalchemy>=2.0.46",
     "sympy>=1.14.0",
     "weaviate-client>=4.19.4",
 ]
 
+[project.optional-dependencies]
+telegram = [
+    "md2tgmd>=0.3.10",
+    "python-telegram-bot[socks]>=22.6",
+]
+ui = [
+    "streamlit>=1.55.0",
+]
