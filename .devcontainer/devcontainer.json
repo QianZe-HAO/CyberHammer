@@ -5,7 +5,7 @@
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "image": "mcr.microsoft.com/devcontainers/base:noble",
     "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh",
-    "remoteUser": "vscode"
+    "remoteUser": "vscode",
     // Features to add to the dev container. More info: https://containers.dev/features.
     // "features": {},
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -16,4 +16,22 @@
     // "customizations": {},
     // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
     // "remoteUser": "root"
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "dmurkowski.mypy"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/bin/python",
+                "python.formatting.provider": "black",
+                "python.linting.enabled": true,
+                "python.linting.provider": "pylint"
+            }
+        }
+    }
 }
