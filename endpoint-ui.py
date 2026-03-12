@@ -8,6 +8,7 @@ from langchain_core.messages import (
     BaseMessage,
     HumanMessage,
     AIMessage,
+    ToolMessage,
 )
 from langchain_core.runnables import RunnableConfig
 from rich.console import Console
@@ -191,6 +192,18 @@ if prompt := st.chat_input("Ask me anything about a topic..."):
                                     full_response += f"\n\n**Using Tool:** `{tool_name}` with `{tool_args}`"
                             if msg.content:
                                 full_response += "\n\n" + msg.content
+                        # elif isinstance(msg, ToolMessage):
+
+
+                        elif isinstance(msg, ToolMessage):
+                            msg_content = msg.content
+                            if msg_content:
+                                content_str = str(msg_content)
+                                preview = content_str[:50].replace('\n', ' ')
+                                with st.expander(f"Tool {msg.name} Response (({preview}...))"):
+                                    st.markdown(f"**Tool Call Result:**\n\n```json\n{content_str}\n```", unsafe_allow_html=True)
+
+
 
                         else:
                             full_response += "\n\n" + "No relevant results found.\n"
