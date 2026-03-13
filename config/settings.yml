@@ -296,7 +296,7 @@ engines:
     engine: 360search
     shortcut: 360so
     timeout: 10.0
-    disabled: true
+    disabled: false
 
   - name: 360search videos
     engine: 360search_videos
@@ -470,7 +470,7 @@ engines:
     categories: [general]
     engine: baidu
     shortcut: bd
-    disabled: true
+    disabled: false
 
   - name: baidu images
     baidu_category: images
@@ -501,7 +501,7 @@ engines:
   - name: bing
     engine: bing
     shortcut: bi
-    disabled: true
+    disabled: false
 
   - name: bing images
     engine: bing_images
@@ -1718,7 +1718,7 @@ engines:
     categories: [general]
     engine: quark
     shortcut: qk
-    disabled: true
+    disabled: false
 
   - name: quark images
     quark_category: images
