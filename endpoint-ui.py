@@ -14,7 +14,7 @@ from langchain_core.runnables import RunnableConfig
 from rich.console import Console
 from utils import print_message
 from agent import agent
-
+import json
 
 st.set_page_config(
     page_title="Cyber Hammer",
@@ -195,14 +195,34 @@ if prompt := st.chat_input("Ask me anything about a topic..."):
                         # elif isinstance(msg, ToolMessage):
 
 
+                        # elif isinstance(msg, ToolMessage):
+                        #     msg_content = msg.content
+                        #     if msg_content:
+                        #         content_str = str(msg_content)
+                        #         preview = content_str[:50].replace('\n', ' ')
+                        #         with st.expander(f"Tool {msg.name} Response (({preview}...))"):
+                        #             st.markdown(f"**Tool Call Result:**\n\n```json\n{content_str}\n```", unsafe_allow_html=True)
+
                         elif isinstance(msg, ToolMessage):
                             msg_content = msg.content
                             if msg_content:
-                                content_str = str(msg_content)
-                                preview = content_str[:50].replace('\n', ' ')
-                                with st.expander(f"Tool {msg.name} Response (({preview}...))"):
-                                    st.markdown(f"**Tool Call Result:**\n\n```json\n{content_str}\n```", unsafe_allow_html=True)
+                                content_str = str(msg_content).strip()
 
+                                # Try to parse as JSON
+                                try:
+                                    parsed_json = json.loads(content_str)
+                                    is_json = True
+                                except json.JSONDecodeError:
+                                    is_json = False
+
+                                # Create preview (first 50 visible chars, no newlines)
+                                preview = content_str[:50].replace('\n', ' ').strip()
+
+                                with st.expander(f"Tool {msg.name} Response ({preview}...)"):
+                                    if is_json:
+                                        st.json(parsed_json)
+                                    else:
+                                        st.markdown(f"{content_str}")
 
 
                         else:
