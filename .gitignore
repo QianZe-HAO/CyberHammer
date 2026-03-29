@@ -154,3 +154,9 @@ cython_debug/
 
 .idea/
 sandbox/
+
+# Markdown Convert
+input/
+output/
+# Do not upload .mcp.json file which record the information of MCP Server
+.mcp.json
