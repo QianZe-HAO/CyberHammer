@@ -3,7 +3,21 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend
-from tools import __all__ as tool_lists
+
+# from tools import __all__ as tool_lists
+from tools import (
+    # internet_search,
+    # crawl_url,
+    get_current_datetime,
+    get_current_timestamp,
+    convert_timestamp_to_datetime,
+    differentiate,
+    integrate_expression,
+    solve_equation,
+    matrix_operation,
+    preprocess_math,
+    calculate,
+)
 from checkpointers import get_checkpointer
 
 load_dotenv()
@@ -48,7 +62,24 @@ When given a topic:
 7. Cite key insights and avoid speculation. If information is unclear or outdated, note that as a limitation.
 
 Always aim for depth, accuracy, readability, and temporal awareness.
-""".format(current_time=__import__('datetime').datetime.now().strftime("%Y-%m-%d"))
+""".format(
+    current_time=__import__("datetime").datetime.now().strftime("%Y-%m-%d")
+)
+
+
+tool_lists = [
+    # internet_search,
+    # crawl_url,
+    get_current_datetime,
+    get_current_timestamp,
+    convert_timestamp_to_datetime,
+    differentiate,
+    integrate_expression,
+    solve_equation,
+    matrix_operation,
+    preprocess_math,
+    calculate,
+]
 
 agent = create_deep_agent(
     model=model,
