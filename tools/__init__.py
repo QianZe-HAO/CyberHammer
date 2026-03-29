@@ -13,6 +13,9 @@ from .date_time import (
 )
 from .web_search import internet_search
 from .web_crawler import crawl_url
+from .ocr_processor import OCRProcessor
+from .markitdown_process import MarkItDownProcessor
+
 from dotenv import load_dotenv
 import os
 
@@ -32,4 +35,5 @@ __all__ = [
     matrix_operation,
     preprocess_math,
     calculate,
+    OCRProcessor, MarkItDownProcessor,
 ]
