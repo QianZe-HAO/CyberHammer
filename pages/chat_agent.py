@@ -16,11 +16,12 @@ from utils import print_message
 from agent import agent
 import json
 
+from openai import OpenAI
+
 
 def chat_agent_page():
     st.set_page_config(
         page_title="Cyber Hammer",
-        page_icon=":robot:",
         layout="wide",
     )
     st.markdown("## Cyber Hammer")
@@ -159,7 +160,29 @@ def chat_agent_page():
         with st.chat_message("user" if isinstance(msg, HumanMessage) else "assistant"):
             st.markdown(msg.content)
 
-    if prompt := st.chat_input("Ask me anything about a topic..."):
+    if prompt := st.chat_input(
+        "Ask me anything about a topic...",
+        accept_audio=True,
+        audio_sample_rate=16000,
+    ):
+        if prompt.text:
+            prompt = prompt.text
+        elif prompt.audio:
+            prompt_audio_name = prompt.audio.read()
+            asr_client = OpenAI(
+                api_key=os.getenv("ASR_MODEL_API_KEY"),
+                base_url=os.getenv(
+                    "ASR_MODEL_BASE_URL",
+                ),
+            )
+            prompt = asr_client.audio.transcriptions.create(
+                file=prompt_audio_name,
+                model=os.getenv("ASR_MODEL_NAME"),
+            ).text
+
+        else:
+            st.stop()
+
         human_msg = HumanMessage(content=prompt)
         st.session_state["messages"].append(human_msg)
         console = Console()
