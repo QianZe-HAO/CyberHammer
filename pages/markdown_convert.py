@@ -11,7 +11,6 @@ def markdown_convert_page():
     # Set page configuration
     st.set_page_config(
         page_title="Document to Markdown Processor",
-        page_icon=":notebook:",
         layout="wide",
     )
 

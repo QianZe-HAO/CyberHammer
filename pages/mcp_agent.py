@@ -148,7 +148,6 @@ def mcp_agent_page():
     """Main Streamlit page for MCP Agent interface"""
     st.set_page_config(
         page_title="Cyber Hammer MCP Agent",
-        page_icon="None",
         layout="wide",
     )
     st.markdown("## Cyber Hammer MCP Agent")
