@@ -8,6 +8,7 @@ dependencies = [
     "crawl4ai>=0.8.0",
     "deepagents>=0.4.3",
     "langchain-community>=0.4.1",
+    "langchain-mcp-adapters>=0.2.2",
     "langchain-openai>=1.1.10",
     "langgraph-checkpoint-postgres>=3.0.4",
     "markitdown[docx,pptx,xls,xlsx]>=0.1.5",
