@@ -1,0 +1,15 @@
+FROM ghcr.io/astral-sh/uv:python3.12-trixie
+WORKDIR /app
+COPY . .
+
+# Allow Python Buffering to be disabled to see logs in real time
+ENV PYTHONUNBUFFERED=1
+
+# Install dependencies
+RUN uv sync
+
+# Run the application on port 8000
+EXPOSE 8000
+
+# Run the application
+CMD ["uv", "run", "mcp-manager.py"]
