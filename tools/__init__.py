@@ -12,7 +12,6 @@ from .date_time import (
     convert_timestamp_to_datetime,
 )
 from .web_search import internet_search
-from .web_crawler import crawl_url
 from .ocr_processor import OCRProcessor
 from .markitdown_process import MarkItDownProcessor
 
@@ -25,7 +24,6 @@ USE_CRAWL4AI = os.getenv("USE_CRAWL4AI", "False").lower() == "true"
 
 __all__ = [
     internet_search,
-    crawl_url,
     get_current_datetime,
     get_current_timestamp,
     convert_timestamp_to_datetime,
