@@ -6,8 +6,7 @@ from deepagents.backends import FilesystemBackend
 
 # from tools import __all__ as tool_lists
 from tools import (
-    # internet_search,
-    # crawl_url,
+    internet_search,
     get_current_datetime,
     get_current_timestamp,
     convert_timestamp_to_datetime,
@@ -68,8 +67,7 @@ Always aim for depth, accuracy, readability, and temporal awareness.
 
 
 tool_lists = [
-    # internet_search,
-    # crawl_url,
+    internet_search,
     get_current_datetime,
     get_current_timestamp,
     convert_timestamp_to_datetime,
