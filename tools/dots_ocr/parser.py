@@ -5,7 +5,7 @@ from multiprocessing.pool import ThreadPool
 import argparse
 
 
-from .model.inference import inference_with_pai
+from .model.inference import inference
 from .utils.consts import image_extensions, MIN_PIXELS, MAX_PIXELS
 from .utils.image_utils import get_image_by_fitz_doc, fetch_image, smart_resize
 from .utils.doc_utils import load_images_from_pdf
@@ -53,7 +53,7 @@ class DotsOCRParser:
         assert self.max_pixels is None or self.max_pixels <= MAX_PIXELS
 
     def _inference_with_vllm(self, image, prompt):
-        response = inference_with_pai(
+        response = inference(
             image,
             prompt,
         )
@@ -106,7 +106,8 @@ class DotsOCRParser:
 
         if source == "image" and fitz_preprocess:
             image = get_image_by_fitz_doc(origin_image, target_dpi=self.dpi)
-            image = fetch_image(image, min_pixels=min_pixels, max_pixels=max_pixels)
+            image = fetch_image(image, min_pixels=min_pixels,
+                                max_pixels=max_pixels)
         else:
             image = fetch_image(
                 origin_image, min_pixels=min_pixels, max_pixels=max_pixels
@@ -165,7 +166,8 @@ class DotsOCRParser:
                 result.update({"filtered": True})
             else:
                 try:
-                    image_with_layout = draw_layout_on_image(origin_image, cells)
+                    image_with_layout = draw_layout_on_image(
+                        origin_image, cells)
                 except Exception as e:
                     print(f"Error drawing layout on image: {e}")
                     image_with_layout = origin_image
@@ -185,14 +187,16 @@ class DotsOCRParser:
                 if (
                     prompt_mode != "prompt_layout_only_en"
                 ):  # no text md when detection only
-                    md_content = layoutjson2md(origin_image, cells, text_key="text")
+                    md_content = layoutjson2md(
+                        origin_image, cells, text_key="text")
                     md_content_no_hf = layoutjson2md(
                         origin_image, cells, text_key="text", no_page_hf=True
                     )  # used for clean output or metric of omnidocbench、olmbench
                     md_file_path = os.path.join(save_dir, f"{save_name}.md")
                     with open(md_file_path, "w", encoding="utf-8") as md_file:
                         md_file.write(md_content)
-                    md_nohf_file_path = os.path.join(save_dir, f"{save_name}_nohf.md")
+                    md_nohf_file_path = os.path.join(
+                        save_dir, f"{save_name}_nohf.md")
                     with open(md_nohf_file_path, "w", encoding="utf-8") as md_file:
                         md_file.write(md_content_no_hf)
                     result.update(
@@ -264,7 +268,8 @@ class DotsOCRParser:
             return self._parse_single_image(**task_args)
 
         num_thread = min(total_pages, self.num_thread)
-        print(f"Parsing PDF with {total_pages} pages using {num_thread} threads...")
+        print(
+            f"Parsing PDF with {total_pages} pages using {num_thread} threads...")
 
         results = []
         with ThreadPool(num_thread) as pool:
@@ -293,7 +298,8 @@ class DotsOCRParser:
         os.makedirs(save_dir, exist_ok=True)
 
         if file_ext == ".pdf":
-            results = self.parse_pdf(input_path, filename, prompt_mode, save_dir)
+            results = self.parse_pdf(
+                input_path, filename, prompt_mode, save_dir)
         elif file_ext in image_extensions:
             results = self.parse_image(
                 input_path,
@@ -326,7 +332,8 @@ def main():
         description="dots.ocr Multilingual Document Layout Parser",
     )
 
-    parser.add_argument("input_path", type=str, help="Input PDF/image file path")
+    parser.add_argument("input_path", type=str,
+                        help="Input PDF/image file path")
 
     parser.add_argument(
         "--output",
@@ -354,7 +361,8 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.1, help="")
     parser.add_argument("--top_p", type=float, default=1.0, help="")
     parser.add_argument("--dpi", type=int, default=200, help="")
-    parser.add_argument("--max_completion_tokens", type=int, default=16384, help="")
+    parser.add_argument("--max_completion_tokens",
+                        type=int, default=16384, help="")
     parser.add_argument("--num_thread", type=int, default=16, help="")
     parser.add_argument(
         "--no_fitz_preprocess",

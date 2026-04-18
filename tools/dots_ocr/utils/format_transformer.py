@@ -1,8 +1,4 @@
-import os
-import sys
-import json
 import re
-
 from PIL import Image
 from tools.dots_ocr.utils.image_utils import PILimage_to_base64
 
@@ -24,7 +20,8 @@ def has_latex_markdown(text: str) -> bool:
     latex_patterns = [
         r"\$\$.*?\$\$",  # Block-level math formula $$...$$
         r"\$[^$\n]+?\$",  # Inline math formula $...$
-        r"\\begin\{.*?\}.*?\\end\{.*?\}",  # LaTeX environment \begin{...}...\end{...}
+        # LaTeX environment \begin{...}...\end{...}
+        r"\\begin\{.*?\}.*?\\end\{.*?\}",
         r"\\[a-zA-Z]+\{.*?\}",  # LaTeX command \command{...}
         r"\\[a-zA-Z]+",  # Simple LaTeX command \command
         r"\\\[.*?\\\]",  # Display math formula \[...\]

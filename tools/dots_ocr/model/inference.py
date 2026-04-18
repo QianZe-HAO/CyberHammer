@@ -17,17 +17,18 @@ from tenacity import (
     retry=retry_if_exception_type(requests.exceptions.RequestException),
     reraise=True,
 )
-def inference_with_pai(
+def inference(
     image,
     prompt,
     temperature=0.1,
     top_p=0.9,
     max_completion_tokens=32768,
-    model_name="dots.ocr",
 ):
     load_dotenv()
     OCR_API_KEY = os.getenv("OCR_API_KEY")
     OCR_BASE_URL = os.getenv("OCR_BASE_URL")
+    OCR_MODEL_NAME = os.getenv("OCR_MODEL_NAME")
+
 
     if not OCR_API_KEY or not OCR_BASE_URL:
         raise ValueError("OCR_API_KEY or OCR_BASE_URL not set in .env file")
@@ -52,7 +53,7 @@ def inference_with_pai(
     try:
         response = client.chat.completions.create(
             messages=messages,
-            model=model_name,
+            model=OCR_MODEL_NAME,
             max_completion_tokens=max_completion_tokens,
             temperature=temperature,
             top_p=top_p,
