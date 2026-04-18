@@ -18,42 +18,21 @@ services:
     networks:
       - cyber-hammer-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  crawl4ai:
-    image: unclecode/crawl4ai:0.8.0
-    container_name: crawl4ai
-    env_file:
-      - .env
-    shm_size: 1gb
-    restart: unless-stopped
-    networks:
-      - cyber-hammer-network
-
   searxng:
     image: searxng/searxng:2026.3.6-0716de6bc
     container_name: searxng
+    ports:
+      - "${SEARXNG_PORT}:8080"
     env_file:
       - .env
     volumes:
       - ./config/:/etc/searxng/
       - ./data/:/var/cache/searxng/
-    restart: unless-stopped
-    networks:
-      - cyber-hammer-network
-
-  mcp-manager:
-    build:
-      context: .
-      dockerfile: Dockerfile.mcp-manager
-    container_name: mcp-manager
-    env_file:
-      - .env
-    ports:
-      - "${MCP_MANAGER_PORT:-8000}:${MCP_MANAGER_PORT:-8000}"
     restart: unless-stopped
     networks:
       - cyber-hammer-network
