@@ -2,8 +2,11 @@ name: cyber-hammer-stack-base
 
 services:
   cyber-hammer-postgres:
-    image: postgres:18.2-trixie
-    container_name: cyber-hammer-postgres
+    # image: postgres:18.2-trixie
+    build:
+      context: .
+      dockerfile: Dockerfile.postgresql
+    container_name: cyber-hammer-postgresql
     restart: always
     env_file:
       - .env
